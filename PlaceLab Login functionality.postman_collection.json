@@ -8,6 +8,18 @@
 	"item": [
 		{
 			"name": "Generate Auth Token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"tests[\"Validating Status Code\"] = responseCode.code == 201;\r",
+							"tests[\"Validating token presence\"] = responseBody.has(\"api_token\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "POST",
 				"header": [],
@@ -39,33 +51,50 @@
 		},
 		{
 			"name": "Login with valid credentials",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"tests[\"Validating token presence\"] = responseCode.code == 200;\r",
+							"tests[\"Validating token presence\"] = responseBody.has(\"token\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"auth": {
-					"type": "oauth2",
-					"oauth2": [
+					"type": "bearer",
+					"bearer": [
 						{
-							"key": "addTokenTo",
-							"value": "header",
+							"key": "token",
+							"value": "{{token}}",
 							"type": "string"
 						}
 					]
 				},
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
 				"body": {
-					"mode": "formdata",
-					"formdata": [
-						{
-							"key": "email",
-							"value": "{{email}}",
-							"type": "text"
-						},
-						{
-							"key": "password",
-							"value": "{{password}}",
-							"type": "text"
+					"mode": "raw",
+					"raw": "{\r\n    \"email\" : \"{{email}}\" ,\r\n    \"password\" : \"{{password}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
 						}
-					]
+					}
 				},
 				"url": {
 					"raw": "https://demo.placelab.com/api/v2/sessions",
@@ -86,13 +115,25 @@
 		},
 		{
 			"name": "Login with invalid email and incorrect password",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"tests[\"Validating Status Code\"] = responseCode.code == 401;\r",
+							"tests[\"Validating error presence\"] = responseBody.has(\"error\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "50bb98c14b77def5cfcde5613a847c0f",
+							"value": "{{token}}",
 							"type": "string"
 						}
 					]
@@ -127,13 +168,25 @@
 		},
 		{
 			"name": "Login with valid email and incorrect password",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"tests[\"Validating Status Code\"] = responseCode.code == 401;\r",
+							"tests[\"Validating error presence\"] = responseBody.has(\"error\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "50bb98c14b77def5cfcde5613a847c0f",
+							"value": "{{token}}",
 							"type": "string"
 						}
 					]
@@ -142,7 +195,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"email\" : \"{{email}}\" ,\r\n    \"password\" : {{$randomPassword}}\r\n}",
+					"raw": "{\r\n   \"email\" : \"{{email}}\",\r\n   \"password\" : \"{{$randomPassword}}\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -168,7 +221,29 @@
 		},
 		{
 			"name": "Login with invalid email and correct password",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"tests[\"Validating Status Code\"] = responseCode.code == 401;\r",
+							"tests[\"Validating error presence\"] = responseBody.has(\"error\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [],
 				"body": {
